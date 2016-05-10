@@ -1,0 +1,2 @@
+module BusPositionsHelper
+end

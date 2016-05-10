@@ -1,0 +1,40 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Bus Positions</h1>
+
+<div class="table-responsive">
+  <div class="col-md-12">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Bus</th>
+          <th>Time</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+          <th>Speed</th>
+          <th colspan="3"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @bus_positions.each do |bus_position| %>
+          <tr>
+            <td><%= bus_position.bus_id %></td>
+            <td><%= bus_position.time %></td>
+            <td><%= bus_position.latitude %></td>
+            <td><%= bus_position.longitude %></td>
+            <td><%= bus_position.speed %></td>
+            <td><%= link_to 'Show', bus_position %></td>
+            <td><%= link_to 'Edit', edit_bus_position_path(bus_position) %></td>
+            <td><%= link_to 'Destroy', bus_position, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-12">
+    <%= paginate @bus_positions %>
+  </div>
+</div>
+
+<%= link_to 'New Bus position', new_bus_position_path %>

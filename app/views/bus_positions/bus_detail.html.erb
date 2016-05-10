@@ -1,0 +1,127 @@
+<script src="//maps.googleapis.com/maps/api/js"></script>
+
+<% if params[:bus_id].blank? %>
+  <h3> Showing Transportation Details for all buses </h3>
+<% end %>
+
+<%= form_tag bus_detail_bus_positions_path, method: :get do %>
+  <h5> Select Bus to view Details </h5>
+  <div class="input-group">
+    <%= select_tag :bus_id, 
+      options_for_select(
+        BusPosition.select(:bus_id).uniq.map{|x| [x.bus_id, x.bus_id]}, 
+        params[:bus_id]
+      ), class: "input form-control", prompt: "All Buses" %>
+    <span class="input-group-btn">
+      <%= submit_tag :submit, class: "btn btn-primary" %>
+    </span>
+  </div>
+<% end %>
+
+<h4> Stoppage Points </h4>
+<div class="well">
+  <div class="btn-stack">
+    <% @location_set.each do |item| %>
+      <div class="btn btn-sm btn-danger"><%= item[:lat] %>, <%= item[:lng] %></div>
+    <% end %>
+  </div>
+</div>
+<div class="col-md-12">
+  <div id="googleMap" style="width:100%;height:400px;"></div>  
+  <div class="well col-md-12">
+    <h4> Legend </h4>
+    <div class="col-md-12"><hr/></div>
+    <div class="col-md-6">
+      <image src="//maps.google.com/mapfiles/ms/icons/green-dot.png"></image> -> Frequently Visited
+      <image src="//maps.google.com/mapfiles/ms/icons/red-dot.png"></image> -> Stop Point/Destination
+    </div>
+    <div class="col-md-6">
+      <div class="col-md-12">
+        <label class="col-md-4 control-label">Number of Frequent Places to show</label>
+        <div class="col-md-8">
+          <%= select_tag :top_n, options_for_select([10,25,50,75,100], (params[:top_n] || 25)), class: "input form-control mappable", prompt: "No. Of Frequent Locations" %>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <label class="col-md-4 control-label">Location Precision</label>
+        <div class="col-md-8">
+          <%= select_tag :precision, 
+            options_for_select(
+              (0..4).map{|x| ["#{x} Place(s)", x]}, 
+              (params[:precision] || "2")
+            ), class: "input form-control mappable", prompt: "Precision Level" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="col-md-12"><hr/></div>
+<h4> Top Visited Points </h4>
+<div class="well">
+  <div class="btn-stack" id="frequent_places">
+  </div>
+</div>
+
+<script type="text/javascript">
+  var stops = JSON.parse('<%= raw @location_set.to_json %>');
+  var freq_positions_url =  "<%= freq_positions_bus_positions_path %>";
+  var map = undefined;
+
+  function addFrequentlyVisited(){
+    $.ajax({
+      dataType: "json",
+      url: freq_positions_url,
+      data: {
+        bus_id: "<%= params[:bus_id] %>", 
+        top_n: $("#top_n").val(),
+        precision: $("#precision").val()
+      },
+      success: function(data){
+        $("#frequent_places").html("");
+        for(i in data){
+          addFreqMarker(data[i], map);
+          $("#frequent_places").append('<button class="btn btn-sm btn-success">'+data[i].lat+", "+data[i].lng+"</button>");
+        }
+      }
+    });
+  }
+
+  $(".mappable").change(function(){
+    initialize();
+  });
+
+  function initialize() {
+    map = new google.maps.Map(document.getElementById('googleMap'), {
+      zoom: 10,
+      center: stops[0]
+    });
+
+    // This event listener calls addMarker() when the map is clicked.
+    for(i in stops){
+      addStopMarker(stops[i]);
+    }
+
+    addFrequentlyVisited();
+  }
+
+  function addStopMarker(location) {
+    // Add the marker at the clicked location, and add the next-available label
+    // from the array of alphabetical characters.
+    var marker = new google.maps.Marker({
+      position: location,
+      map: map
+    });
+  }
+
+  function addFreqMarker(location) {
+    // Add the marker at the clicked location, and add the next-available label
+    // from the array of alphabetical characters.
+    var marker = new google.maps.Marker({
+      position: location,
+      icon: "//maps.google.com/mapfiles/ms/icons/green-dot.png",
+      map: map
+    });
+  }
+
+  google.maps.event.addDomListener(window, 'load', initialize);
+</script>

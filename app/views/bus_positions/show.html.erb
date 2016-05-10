@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Bus:</strong>
+  <%= @bus_position.bus_id %>
+</p>
+
+<p>
+  <strong>Time:</strong>
+  <%= @bus_position.time %>
+</p>
+
+<p>
+  <strong>Latitude:</strong>
+  <%= @bus_position.latitude %>
+</p>
+
+<p>
+  <strong>Longitude:</strong>
+  <%= @bus_position.longitude %>
+</p>
+
+<p>
+  <strong>Speed:</strong>
+  <%= @bus_position.speed %>
+</p>
+
+<%= link_to 'Edit', edit_bus_position_path(@bus_position) %> |
+<%= link_to 'Back', bus_positions_path %>
