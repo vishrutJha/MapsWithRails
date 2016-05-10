@@ -31,6 +31,6 @@ Assuming ruby 2 +
   + Select "n" for top n places
   + Select precision of GPS for grouping close by places in frequently visited
 
-- Sample Links for views:
+- Sample Links for views: (assuming server is running on localhost:3000)
   + [Top 25 places overall](http://localhost:3000/bus_positions/bus_detail?utf8=%E2%9C%93&bus_id=&commit=submit&precision=0)
   + [Top 25 places for bus number 59](http://localhost:3000/bus_positions/bus_detail?utf8=%E2%9C%93&bus_id=59&commit=submit&precision=0)
